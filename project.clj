@@ -6,6 +6,8 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [criterium "0.4.3"]
                  [cuma "0.0.7"]
-                 [de.ubercode.clostache/clostache "1.3.1"]]
+                 [de.ubercode.clostache/clostache "1.4.0"]]
 
-  :aliases {"bench-cuma" ["run" "-m" "benchmark.cuma"]})
+  :aliases {"bench-cuma" ["run" "-m" "benchmark.cuma"]
+            "bench-cuma-particulary" ["run" "-m" "benchmark.cuma/-detail"]
+            })

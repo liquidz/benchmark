@@ -1,6 +1,7 @@
 (ns benchmark.cuma
   (:require
     [benchmark.core   :refer [*full-bench* exec-time-mean]]
+    [criterium.core   :as crit]
     [clojure.string   :as str]
     [clostache.parser :as clostache]
     [cuma.core        :as cuma]))
@@ -22,28 +23,51 @@
 (defn clostache-map-bind  [] (clostache/render "{{#m}}{{n}}{{/m}}" {:m {:n 100}}))
 (defn clostache-partial   [] (clostache/render "{{>tmpl}}" {:x "world"} {:tmpl "hello {{x}}"}))
 
+(defn print-execute-mean-time
+  []
+  (println "## cuma")
+  (->> [(exec-time-mean (cuma-unescaped))
+        (exec-time-mean (cuma-escaped))
+        (exec-time-mean (cuma-dotted))
+        (exec-time-mean (cuma-if))
+        (exec-time-mean (cuma-for))
+        (exec-time-mean (cuma-map-bind))
+        (exec-time-mean (cuma-partial))
+        (exec-time-mean (cuma-let))]
+       (str/join "\n")
+       println)
+
+  (println "## clostache")
+  (->> [(exec-time-mean (clostache-unescaped))
+        (exec-time-mean (clostache-escaped))
+        (exec-time-mean (clostache-dotted))
+        (exec-time-mean (clostache-if))
+        (exec-time-mean (clostache-for))
+        (exec-time-mean (clostache-map-bind))
+        (exec-time-mean (clostache-partial))]
+       (str/join "\n")
+       println))
+
+(defn -detail
+  []
+  (println "## unescaped")
+  (crit/bench (cuma-unescaped))
+  (println "## escaped")
+  (crit/bench (cuma-escaped))
+  (println "## dotted")
+  (crit/bench (cuma-dotted))
+  (println "## if")
+  (crit/bench (cuma-if))
+  (println "## for")
+  (crit/bench (cuma-for))
+  (println "## map bind")
+  (crit/bench (cuma-map-bind))
+  (println "## partial")
+  (crit/bench (cuma-partial))
+  (println "## let")
+  (crit/bench (cuma-let)))
+
 (defn -main
   [& [full-bench]]
   (binding [*full-bench* (some? full-bench)]
-    (println "## cuma")
-    (->> [(exec-time-mean (cuma-unescaped))
-          (exec-time-mean (cuma-escaped))
-          (exec-time-mean (cuma-dotted))
-          (exec-time-mean (cuma-if))
-          (exec-time-mean (cuma-for))
-          (exec-time-mean (cuma-map-bind))
-          (exec-time-mean (cuma-partial))
-          (exec-time-mean (cuma-let))]
-         (str/join "\n")
-         println)
-
-    (println "## clostache")
-    (->> [(exec-time-mean (clostache-unescaped))
-          (exec-time-mean (clostache-escaped))
-          (exec-time-mean (clostache-dotted))
-          (exec-time-mean (clostache-if))
-          (exec-time-mean (clostache-for))
-          (exec-time-mean (clostache-map-bind))
-          (exec-time-mean (clostache-partial))]
-         (str/join "\n")
-         println)))
+    (print-execute-mean-time)))
