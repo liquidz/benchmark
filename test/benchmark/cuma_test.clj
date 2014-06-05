@@ -5,12 +5,11 @@
 
 
 (deftest all-test
-  (are [x y] (= x y)
-       (cuma-unescaped) (clostache-unescaped)
-       (cuma-escaped)   (clostache-escaped)
-       (cuma-dotted)    (clostache-dotted)
-       (cuma-if)        (clostache-if)
-       (cuma-for)       (clostache-for)
-       (cuma-map-bind)  (clostache-map-bind)
-       (cuma-partial)   (clostache-partial)))
+  (is (= (cuma-unescaped) (clostache-unescaped) (selmer-unescaped)))
+  (is (= (cuma-escaped)   (clostache-escaped)   (selmer-escaped)))
+  (is (= (cuma-dotted)    (clostache-dotted)    (selmer-dotted)))
+  (is (= (cuma-if)        (clostache-if)        (selmer-if)))
+  (is (= (cuma-for)       (clostache-for)       (selmer-for)))
+  (is (= (cuma-map-bind)  (clostache-map-bind)))
+  (is (= (cuma-partial)   (clostache-partial))))
 

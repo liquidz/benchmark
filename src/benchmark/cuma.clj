@@ -4,6 +4,7 @@
     [criterium.core   :as crit]
     [clojure.string   :as str]
     [clostache.parser :as clostache]
+    [selmer.parser    :as selmer]
     [cuma.core        :as cuma]))
 
 (defn cuma-unescaped [] (cuma/render "$(raw x)" {:x "<h1>"}))
@@ -22,6 +23,12 @@
 (defn clostache-for       [] (clostache/render "{{#arr}}{{n}}{{/arr}}" {:arr [{:n 1} {:n 2} {:n 3}]}))
 (defn clostache-map-bind  [] (clostache/render "{{#m}}{{n}}{{/m}}" {:m {:n 100}}))
 (defn clostache-partial   [] (clostache/render "{{>tmpl}}" {:x "world"} {:tmpl "hello {{x}}"}))
+
+(defn selmer-unescaped [] (selmer/render "{{x|safe}}" {:x "<h1>"}))
+(defn selmer-escaped   [] (selmer/render "{{x}}" {:x "<h1>"}))
+(defn selmer-dotted    [] (selmer/render "{{x.y}}" {:x {:y "hello"}}))
+(defn selmer-if        [] (selmer/render "{%if x%}hello{%endif%}" {:x true}))
+(defn selmer-for       [] (selmer/render "{%for x in arr%}{{x.n}}{%endfor%}" {:arr [{:n 1} {:n 2} {:n 3}]}))
 
 (defn print-execute-mean-time
   []
@@ -46,7 +53,17 @@
         (exec-time-mean (clostache-map-bind))
         (exec-time-mean (clostache-partial))]
        (str/join "\n")
-       println))
+       println)
+
+  (println "## selmer")
+  (->> [(exec-time-mean (selmer-unescaped))
+        (exec-time-mean (selmer-escaped))
+        (exec-time-mean (selmer-dotted))
+        (exec-time-mean (selmer-if))
+        (exec-time-mean (selmer-for))]
+       (str/join "\n")
+       println)
+  )
 
 (defn -detail
   []
